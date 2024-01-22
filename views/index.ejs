@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>mainpage</title>
+        <style>
+            input[readonly] {
+                border: none;
+                outline: none;
+            }
+            input[name='productName'] {
+                font-size: 17px;
+                font-weight: 600;
+                color: tomato;
+            }
+        </style>
+    </head>
+    <body>
+        <div style="font-size: 30px; font-weight: 800; color: rgb(0, 194, 42)">상품등록</div>
+        <div style="width: 300px; height: 280px; border: 1px solid black">
+            <form action="/api/product" method="post" style="margin: 10px auto; width: 250px">
+                <div>
+                    <input type="text" id="makeProductName" placeholder="상품명" name="productName" />
+                </div>
+                <div>
+                    <textarea
+                        name="productDetail"
+                        id="makeProductDetail"
+                        cols="30"
+                        rows="10"
+                        placeholder="상품 내용"
+                    ></textarea>
+                </div>
+                <div>
+                    <input type="text" id="makeSellerName" placeholder="판매자명" name="sellerName" />
+                    <input type="password" id="makePassword" placeholder="비밀번호" name="password" />
+                </div>
+                <button type="submit">등록하기</button>
+            </form>
+        </div>
+
+        <div style="font-size: 30px; font-weight: 800; color: blue">상품목록</div>
+        <div id="itemList" style="width: 1000px; display: flex; flex-wrap: wrap">
+            <% products.forEach(product => { %>
+            <form
+                id="<%= product._id %>"
+                style="margin: 10px auto; width: 300px; padding: 10px; border: 1px solid black"
+            >
+                <div>
+                    상품명 :
+                    <input type="text" name="productName" readonly value="<%= product.productName %>" />
+                </div>
+
+                <div>
+                    판매자 명 :
+                    <input type="text" name="sellerName" readonly value="<%= product.sellerName %>" />
+                    <p>상품 상태 : <%= product.productStatus %></p>
+                    <p><%= product.registrationDate %></p>
+                </div>
+            </form>
+            <% }); %>
+        </div>
+        <script type="module" src="../app.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const itemList = document.querySelector('#itemList');
+                itemList.addEventListener('click', (e) => {
+                    const closestForm = e.target.closest('form');
+                    window.location.href = `/api/productDetail/${closestForm.id}`;
+                });
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>detailPage</title>
+        <style>
+            input[readonly] {
+                border: none;
+                outline: none;
+            }
+            input[name='productName'] {
+                font-size: 17px;
+                font-weight: 600;
+                color: tomato;
+            }
+        </style>
+    </head>
+    <body>
+        <div style="width: 1000px; font-size: 30px; font-weight: 800; text-align: center; color: blue">상품상세</div>
+        <div id="itemList" style="width: 1000px; display: flex; flex-wrap: wrap">
+            <form
+                id="<%= products._id %>"
+                style="margin: 10px auto; width: 300px; padding: 10px; border: 1px solid black"
+            >
+                <div>
+                    상품명 :
+                    <input type="text" name="productName" readonly value="<%= products.productName %>" />
+                </div>
+
+                <div>
+                    <span style="display: flex">상품 설명</span>
+                    <textarea name="productDetail" readonly><%= products.productDetail %></textarea>
+                </div>
+
+                <div>
+                    판매자명 :
+                    <input type="text" name="sellerName" readonly value="<%= products.sellerName %>" />
+                    <input type="password" placeholder="비밀번호" name="password" style="display: none" />
+                    <p>상품상태 : <%= products.productStatus %></p>
+                    <p><%= products.registrationDate %></p>
+                </div>
+                <button id="modbtn" type="button">수정하기</button>
+                <button id="finbtn" type="button" style="display: none">수정완료</button>
+                <button id="cancelbtn" type="button" style="display: none">수정취소</button>
+                <button id="delbtn" type="button" style="display: none">삭제하기</button>
+            </form>
+        </div>
+        <script type="module" src="../app.js"></script>
+
+        <!-- 함수를 모듈화 시키면 읽히지 않는 에러가 생김 -->
+        <script>
+            // 함수 최소화
+            function ButtonClick(e, actionFunction) {
+                e.preventDefault();
+
+                const closestForm = e.target.closest('form');
+                const productId = closestForm.id;
+
+                if (actionFunction == btnChange) {
+                    actionFunction(closestForm, e);
+                } else {
+                    actionFunction(closestForm, productId);
+                }
+            }
+
+            // 수정 버튼 눌렀을 때
+            document.querySelector('#modbtn').addEventListener('click', (e) => {
+                ButtonClick(e, btnChange);
+            });
+
+            // 수정취소 버튼 눌렀을 때
+            document.querySelector('#cancelbtn').addEventListener('click', (e) => {
+                ButtonClick(e, btnChange);
+            });
+
+            // 수정완료 버튼 눌렀을 떄
+            document.querySelector('#finbtn').addEventListener('click', (e) => {
+                ButtonClick(e, modProduct);
+            });
+
+            // 삭제 버튼 눌럿을 때
+            document.querySelector('#delbtn').addEventListener('click', (e) => {
+                ButtonClick(e, delProduct);
+            });
+
+            //버튼 함수(수정버튼, 수정 취소버튼)
+            function btnChange(closestForm, e) {
+                if (closestForm) {
+                    const productElement = closestForm.querySelectorAll('input, textarea');
+                    productElement.forEach((product) => {
+                        product.removeAttribute('readonly');
+                    });
+                }
+
+                const modbtn = closestForm.querySelector('#modbtn');
+                const finBtn = closestForm.querySelector('#finbtn');
+                const delBtn = closestForm.querySelector('#delbtn');
+                const password = closestForm.querySelector('input[name="password"]');
+                const cancelbtn = closestForm.querySelector('#cancelbtn');
+
+                if (e.target.id === 'modbtn') {
+                    if (closestForm) {
+                        const productElement = closestForm.querySelectorAll('input, textarea');
+                        productElement.forEach((product) => {
+                            product.removeAttribute('readonly');
+                        });
+                    }
+                    modbtn.style.display = 'none';
+                    finBtn.style.display = 'inline-block';
+                    cancelbtn.style.display = 'inline-block';
+                    delBtn.style.display = 'inline-block';
+                    password.style.display = 'block';
+                } else if (e.target.id === 'cancelbtn') {
+                    if (closestForm) {
+                        const productElement = closestForm.querySelectorAll('input, textarea');
+                        productElement.forEach((product) => {
+                            product.readOnly = true;
+                        });
+                    }
+                    modbtn.style.display = 'inline-block';
+                    finBtn.style.display = 'none';
+                    cancelbtn.style.display = 'none';
+                    delBtn.style.display = 'none';
+                    password.style.display = 'none';
+                }
+            }
+
+            // 수정하기 함수
+            async function modProduct(closestForm, productId) {
+                const productElement = closestForm.querySelectorAll('input, textarea');
+                const data = {};
+                productElement.forEach((product) => {
+                    data[product.name] = product.value;
+                });
+                try {
+                    const response = await fetch(`/api/product/${productId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data),
+                    });
+
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        const errorData = await response.json();
+                        console.error('Server response error:', response.status, response.statusText, errorData);
+                    }
+                } catch (error) {
+                    console.error('Error during update:', error);
+                }
+            }
+
+            // 삭제하기 함수
+            async function delProduct(closestForm, productId) {
+                let productPwd = closestForm.querySelector('input[name=password]');
+                productPwd = productPwd.value;
+                try {
+                    const response = await fetch(`/api/product/${productId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ password: productPwd }),
+                    });
+                    // 네트워크 요청 성공 및 서버 응답이 성공적인 경우
+                    if (response.ok) {
+                        const responseData = await response.json(); // 혹은 response.text() 등으로 데이터를 가져올 수 있음
+                        console.log('Server response:', responseData);
+                        window.location = '/api';
+                    } else {
+                        // 서버 응답이 실패한 경우
+                        const errorData = await response.json();
+                        console.error('Server response error:', response.status, response.statusText, errorData);
+                    }
+                } catch (error) {
+                    console.error('Error during update:', error);
+                }
+            }
+        </script>
+    </body>
+</html>
