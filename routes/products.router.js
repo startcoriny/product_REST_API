@@ -3,6 +3,7 @@ import productschemas from '../schemas/products.schema.js';
 
 const router = express.Router();
 
+// 상품 삽입 API
 router.post('/product', async (req, res) => {
     try {
         const { productName, productDetail, sellerName, password } = req.body;
@@ -41,13 +42,19 @@ router.patch('/product/:productId', async (req, res) => {
         const { productName, productDetail, sellerName, password = 0 } = req.body;
         const products = await productschemas.findById(productId).exec();
 
+        // Validation
+        // 상품이 없다면 에러메세지 전송 (상품이 항상 있다고 나와서 이 IF문을 진입하지 않음)
         if (!products) {
             return res.status(404).json({ errmessege: '상품조회에 실패 하였습니다 ' });
         }
 
+        // Validation
+        // 비밀번호가 일치하지 않는다면 에러메세지 전송
         if (parseInt(password) !== products.password) {
             return res.status(404).json({ errmessege: '비밀번호가 일치하지 않습니다.' });
         }
+
+        //위 Validation을 지나면 검증이 됐으므로 데이터를 넣어주고 저장해준뒤 반환
         products.productName = productName;
         products.productDetail = productDetail;
         products.sellerName = sellerName;
@@ -55,7 +62,7 @@ router.patch('/product/:productId', async (req, res) => {
 
         return res.status(200).json({ products });
     } catch (error) {
-        // 발생한 에러를 다음 에러 처리 미들웨어로 전달합니다.
+        // 발생한 에러 문구 전달
         return res.status(404).json({ errmessege: '상품조회에 실패 하거나 비밀번호가 일치하지 않습니다.' });
     }
 });
@@ -67,11 +74,14 @@ router.delete('/product/:productId', async (req, res) => {
         const { password } = req.body;
         const products = await productschemas.findById(productId).exec();
 
-        //상품 존재유무 확인
+        // Validation
+        // 상품이 없다면 에러메세지 전송 (상품이 항상 있다고 나와서 이 IF문을 진입하지 않음)
         if (!products) {
             return res.status(404).json({ errmessege: '상품조회에 실패 하였습니다 ' });
         }
 
+        // Validation
+        // 비밀번호가 일치하지 않는다면 에러메세지 전송
         if (parseInt(password) !== products.password) {
             return res.status(404).json({ errmessege: '비밀번호가 일치하지 않습니다.' });
         }
@@ -79,7 +89,7 @@ router.delete('/product/:productId', async (req, res) => {
         await productschemas.findByIdAndDelete(productId);
         return res.status(200).json({});
     } catch (error) {
-        // 발생한 에러를 다음 에러 처리 미들웨어로 전달합니다.
+        // 발생한 에러 문구 전달
         return res.status(404).json({ errmessege: '상품조회에 실패 하거나 비밀번호가 일치하지 않습니다.' });
     }
 });
