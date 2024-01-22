@@ -8,7 +8,7 @@ const connect = () => {
             //connect 메서드를 사용하여 연결정보를 입력하고 MongoDB에 연결시도
             process.env.MONGODB_ADDRESS, // MongoDB클러스터의 주소와 사용자 인증 정보를 포함한 연결 문자열입력 & 환경 변수로 관리
             {
-                dbName: 'products', // todo_memo 데이터베이스명을 사용합니다.
+                dbName: 'products', // products 데이터베이스명을 사용합니다.
             }
         )
         .then(() => console.log('MongoDB 연결에 성공하였습니다.'))

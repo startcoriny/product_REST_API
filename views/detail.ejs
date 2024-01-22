@@ -14,6 +14,11 @@
                 font-weight: 600;
                 color: tomato;
             }
+            select {
+                border: none;
+                width: 100px;
+                appearance: none;
+            }
         </style>
     </head>
     <body>
@@ -37,7 +42,18 @@
                     판매자명 :
                     <input type="text" name="sellerName" readonly value="<%= products.sellerName %>" />
                     <input type="password" placeholder="비밀번호" name="password" style="display: none" />
-                    <p>상품상태 : <%= products.productStatus %></p>
+                    <div>
+                        <span>상품상태 : </span>
+                        <select id="productStatus" name="productStatus">
+                            <% if (products.productStatus === 'FOR_SALE') { %>
+                            <option value="FOR_SALE" selected>FOR_SALE</option>
+                            <option value="SOLD_OUT">SOLD_OUT</option>
+                            <% } else if (products.productStatus === 'SOLD_OUT') { %>
+                            <option value="SOLD_OUT" selected>SOLD_OUT</option>
+                            <option value="FOR_SALE">FOR_SALE</option>
+                            <% } %>
+                        </select>
+                    </div>
                     <p><%= products.registrationDate %></p>
                 </div>
                 <button id="modbtn" type="button">수정하기</button>
@@ -98,6 +114,7 @@
                 const delBtn = closestForm.querySelector('#delbtn');
                 const password = closestForm.querySelector('input[name="password"]');
                 const cancelbtn = closestForm.querySelector('#cancelbtn');
+                const select = closestForm.querySelector('select');
 
                 if (e.target.id === 'modbtn') {
                     if (closestForm) {
@@ -111,6 +128,8 @@
                     cancelbtn.style.display = 'inline-block';
                     delBtn.style.display = 'inline-block';
                     password.style.display = 'block';
+                    select.style.border = '1px solid black';
+                    select.style.appearance = 'auto';
                 } else if (e.target.id === 'cancelbtn') {
                     if (closestForm) {
                         const productElement = closestForm.querySelectorAll('input, textarea');
@@ -123,6 +142,8 @@
                     cancelbtn.style.display = 'none';
                     delBtn.style.display = 'none';
                     password.style.display = 'none';
+                    select.style.border = 'none';
+                    select.style.appearance = 'none';
                 }
             }
 
