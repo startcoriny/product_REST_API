@@ -39,7 +39,7 @@ router.get('/productDetail/:productId', async (req, res) => {
 router.patch('/product/:productId', async (req, res) => {
     try {
         const productId = req.params.productId;
-        const { productName, productDetail, sellerName, password = 0 } = req.body;
+        const { productName, productDetail, sellerName, password = 0, productStatus } = req.body;
         const products = await productschemas.findById(productId).exec();
 
         // Validation
@@ -58,6 +58,7 @@ router.patch('/product/:productId', async (req, res) => {
         products.productName = productName;
         products.productDetail = productDetail;
         products.sellerName = sellerName;
+        products.productStatus = productStatus;
         await products.save();
 
         return res.status(200).json({ products });

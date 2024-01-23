@@ -149,10 +149,11 @@
 
             // 수정하기 함수
             async function modProduct(closestForm, productId) {
-                const productElement = closestForm.querySelectorAll('input, textarea');
+                const productElement = closestForm.querySelectorAll('input, textarea, select');
                 const data = {};
                 productElement.forEach((product) => {
                     data[product.name] = product.value;
+                    console.log('product.value =>' + product.value);
                 });
                 try {
                     const response = await fetch(`/api/product/${productId}`, {
