@@ -34,7 +34,7 @@
 ● 상품명, 작성자명, 작성내용, 비밀번호를 request에서 전달 받기.<br>
 ● 수정할 상품과 비밀번호 일치 여부를 확인한 후, 동일할 때만 글이 수정되게 하기<br>
 
-### 상품 목록조회 GET /api/
+### 상품 삭제 DELETE /api/product/:productId
 <hr>
 <img src="https://github.com/startcoriny/product_REST_API/assets/127919222/0a66a2e4-7130-49c5-a4cc-17b9ec1a7b64" width="600"/><br>
 ● 비밀번호를 request에서 전달 받기.<br>
