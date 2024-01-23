@@ -8,6 +8,11 @@ router.post('/product', async (req, res) => {
     try {
         const { productName, productDetail, sellerName, password } = req.body;
 
+        // req.body에 비어있는 항목이 있을경우
+        if (!(productName || productDetail || sellerName || password)) {
+            return res.status(400).json({ errMessage: '데이터 형식이 올바르지 않습니다.' });
+        }
+
         const product = new productschemas({
             productName,
             productDetail,
@@ -18,7 +23,7 @@ router.post('/product', async (req, res) => {
         await product.save();
         return res.status(201).redirect('/api');
     } catch (error) {
-        return res.status(404).json({ errmessege: '상품 추가 에러' });
+        return res.status(500).json({ errmessege: '예기치 못한 에러가 발생하였습니다.' });
     }
 });
 
@@ -32,6 +37,12 @@ router.get('/', async (req, res) => {
 router.get('/productDetail/:productId', async (req, res) => {
     const productId = req.params.productId;
     const products = await productschemas.findById(productId).exec();
+
+    // 해당 상품이 존재하지 않을 경우
+    if (!products) {
+        return res.status(404).json({ errMessage: '상품조회에 실패하였습니다.' });
+    }
+
     return res.status(200).render('detail', { products });
 });
 
@@ -42,6 +53,11 @@ router.patch('/product/:productId', async (req, res) => {
         const { productName, productDetail, sellerName, password = 0, productStatus } = req.body;
         const products = await productschemas.findById(productId).exec();
 
+        // req.body에 비어있는 항목이 있거나 params가 비어 있을경우
+        if (!(productName || productDetail || sellerName || password) || !req.params) {
+            return res.status(400).json({ errMessage: '데이터 형식이 올바르지 않습니다.' });
+        }
+
         // Validation
         // 상품이 없다면 에러메세지 전송 (상품이 항상 있다고 나와서 이 IF문을 진입하지 않음)
         if (!products) {
@@ -51,7 +67,7 @@ router.patch('/product/:productId', async (req, res) => {
         // Validation
         // 비밀번호가 일치하지 않는다면 에러메세지 전송
         if (parseInt(password) !== products.password) {
-            return res.status(404).json({ errmessege: '비밀번호가 일치하지 않습니다.' });
+            return res.status(401).json({ errmessege: '상품을 수정할 권한이 존재하지 않습니다.' });
         }
 
         //위 Validation을 지나면 검증이 됐으므로 데이터를 넣어주고 저장해준뒤 반환
@@ -64,7 +80,7 @@ router.patch('/product/:productId', async (req, res) => {
         return res.status(200).json({ products });
     } catch (error) {
         // 발생한 에러 문구 전달
-        return res.status(404).json({ errmessege: '상품조회에 실패 하거나 비밀번호가 일치하지 않습니다.' });
+        return res.status(500).json({ errmessege: '예기치 못한 에러가 발생하였습니다.' });
     }
 });
 
@@ -75,6 +91,11 @@ router.delete('/product/:productId', async (req, res) => {
         const { password } = req.body;
         const products = await productschemas.findById(productId).exec();
 
+        // 요청받은 param또는 body가 비어있다면
+        if (!req.params || !req.body) {
+            return res.status(400).json({ errmessege: '데이터 형식이 올바르지 않습니다.' });
+        }
+
         // Validation
         // 상품이 없다면 에러메세지 전송 (상품이 항상 있다고 나와서 이 IF문을 진입하지 않음)
         if (!products) {
@@ -84,14 +105,14 @@ router.delete('/product/:productId', async (req, res) => {
         // Validation
         // 비밀번호가 일치하지 않는다면 에러메세지 전송
         if (parseInt(password) !== products.password) {
-            return res.status(404).json({ errmessege: '비밀번호가 일치하지 않습니다.' });
+            return res.status(401).json({ errmessege: '상품을 삭제할 권한이 존재하지 않습니다.' });
         }
 
         await productschemas.findByIdAndDelete(productId);
         return res.status(200).json({});
     } catch (error) {
         // 발생한 에러 문구 전달
-        return res.status(404).json({ errmessege: '상품조회에 실패 하거나 비밀번호가 일치하지 않습니다.' });
+        return res.status(404).json({ errmessege: '예기치 못한 에러가 발생하였습니다.' });
     }
 });
 
