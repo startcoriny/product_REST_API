@@ -8,6 +8,11 @@
 ### ■ AWS EC2에 배포하였습니다.
 <a href='http://13.125.255.98:3000/api'> 프로젝트 링크 </a>
 
+## 와이어 프레임
+![스크린샷 2024-01-23 121501](https://github.com/startcoriny/product_REST_API/assets/127919222/5fbce8e1-eea0-4818-a20b-861421608c48)
+![스크린샷 2024-01-23 121510](https://github.com/startcoriny/product_REST_API/assets/127919222/64de5f6e-1b7c-4096-86bf-acdceb36959d)
+![스크린샷 2024-01-23 121531](https://github.com/startcoriny/product_REST_API/assets/127919222/471848c5-6077-4cbf-8c16-871a56c1f44d)
+![스크린샷 2024-01-23 121536](https://github.com/startcoriny/product_REST_API/assets/127919222/1b16b7a2-5ed4-4b9c-b676-43c042ad9394)
 
 <br><br><br>
 ### 상품 목록조회 API  |  GET /api/
